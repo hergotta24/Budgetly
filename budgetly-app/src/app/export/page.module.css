@@ -1,0 +1,294 @@
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(39, 199, 170, 0.12), transparent 45%),
+    radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.9), transparent 40%),
+    linear-gradient(180deg, #f7fbfa 0%, #eef4f3 100%);
+  color: #1f2a2d;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 32px clamp(20px, 4vw, 48px) 8px;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(21, 26, 28, 0.08);
+  padding: 12px 16px;
+  box-shadow: 0 12px 20px rgba(13, 36, 34, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.logoMark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #32c7a6, #1f9d88);
+  color: #ffffff;
+}
+
+.logoMark svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brandName {
+  color: #1f2a2d;
+  letter-spacing: 0.2px;
+}
+
+.topIcons {
+  display: flex;
+  gap: 10px;
+}
+
+.iconButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 33, 31, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  display: grid;
+  place-items: center;
+  color: #2b3a3f;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.iconButton svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.iconButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 14px rgba(10, 30, 30, 0.12);
+}
+
+.navTabs {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(21, 26, 28, 0.08);
+  box-shadow: 0 12px 20px rgba(13, 36, 34, 0.04);
+}
+
+.navButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #3b4b4f;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.navButton:hover {
+  background: rgba(40, 190, 164, 0.12);
+  color: #1f2a2d;
+  transform: translateY(-1px);
+}
+
+.navActive {
+  background: linear-gradient(135deg, rgba(40, 190, 164, 0.2), rgba(40, 190, 164, 0.05));
+  border-color: rgba(40, 190, 164, 0.35);
+  color: #1b3733;
+}
+
+.navIcon {
+  width: 18px;
+  height: 18px;
+  color: #1f9d88;
+  display: grid;
+  place-items: center;
+}
+
+.navIcon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.main {
+  width: min(100%, 1000px);
+  margin: 0 auto;
+  padding: 30px clamp(20px, 4vw, 48px) 80px;
+  display: grid;
+  gap: 40px;
+}
+
+.hero {
+  text-align: center;
+  display: grid;
+  gap: 16px;
+}
+
+.hero h1 {
+  font-size: clamp(26px, 3vw, 32px);
+  font-weight: 700;
+  margin: 0;
+}
+
+.hero p {
+  margin: 0 auto;
+  max-width: 540px;
+  font-size: 15px;
+  color: #5b6b6f;
+  line-height: 1.6;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  justify-items: center;
+}
+
+.card {
+  width: 100%;
+  max-width: 340px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 33, 31, 0.08);
+  box-shadow: 0 18px 30px rgba(17, 36, 35, 0.08);
+  padding: 24px 22px;
+  display: grid;
+  gap: 12px;
+  text-align: center;
+  animation: floatIn 0.7s ease both;
+}
+
+.cardIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: rgba(36, 199, 175, 0.12);
+  color: #24c7af;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+}
+
+.cardIcon svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.card h2 {
+  margin: 4px 0 0;
+  font-size: 16px;
+}
+
+.card p {
+  margin: 0;
+  font-size: 13px;
+  color: #6f7d81;
+  line-height: 1.5;
+}
+
+.ctaButton {
+  margin-top: 6px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #24c7af, #1fb39d);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(31, 179, 157, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ctaButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(31, 179, 157, 0.35);
+}
+
+.footer {
+  margin-top: auto;
+  padding: 26px clamp(20px, 4vw, 48px) 36px;
+  text-align: center;
+  font-size: 13px;
+  color: #5b6b6f;
+  border-top: 1px solid rgba(15, 33, 31, 0.08);
+  background: rgba(225, 245, 241, 0.6);
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 800px) {
+  .navTabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .topBar {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .navTabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
