@@ -157,46 +157,6 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <div className={styles.topBar}>
-          <div className={styles.brand}>
-            <span className={styles.logoMark}>
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <rect x="2" y="2" width="20" height="20" rx="6" />
-                <path d="M7 15l3-3 3 2 4-5" />
-                <path d="M7 7v8h8" />
-              </svg>
-            </span>
-            <span className={styles.brandName}>Budgetly</span>
-          </div>
-          <div className={styles.topIcons}>
-            {topIcons.map((icon) => (
-              <button
-                className={styles.iconButton}
-                type="button"
-                key={icon}
-                aria-label={icon}
-              >
-                {icons[icon]}
-              </button>
-            ))}
-          </div>
-        </div>
-        <nav className={styles.navTabs} aria-label="Primary">
-          {navItems.map((item) => (
-            <button
-              type="button"
-              key={item.label}
-              className={`${styles.navButton} ${
-                item.active ? styles.navActive : ""
-              }`}
-            >
-              <span className={styles.navIcon}>{icons[item.icon]}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </header>
 
       <main className={styles.main}>
         <section className={styles.titleRow}>

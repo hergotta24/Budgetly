@@ -1,30 +1,15 @@
-import styles from "./page.module.css";
+import Link from "next/link";
+import styles from "./Header.module.css";
 
 const navItems = [
-  { label: "Import", icon: "upload", active: false },
-  { label: "Transactions", icon: "list", active: false },
-  { label: "Budget", icon: "wallet", active: false },
-  { label: "Dashboard", icon: "grid", active: false },
-  { label: "Spending", icon: "card", active: false },
-  { label: "Export", icon: "download", active: true },
+  { href: "/import", label: "Import", icon: "upload", active: true },
+  { href: "/transactions", label: "Transactions", icon: "list", active: false },
+  { href: "/budget", label: "Budget", icon: "wallet", active: false },
+  { href: "/dashboard", label: "Dashboard", icon: "grid", active: false },
+  { href: "/spending", label: "Spending", icon: "card", active: false },
+  { href: "/export", label: "Export", icon: "download", active: false },
 ];
-
-const topIcons = ["twitter", "linkedin", "moon"];
-
-const exportOptions = [
-  {
-    title: "Google Sheets",
-    description:
-      "Export your categorized transactions and reports directly to Google Sheets for collaborative analysis.",
-    action: "Export to Google Sheets",
-  },
-  {
-    title: "Microsoft Excel",
-    description:
-      "Download your financial data as an Excel spreadsheet for offline analysis and reporting.",
-    action: "Export to Excel",
-  },
-];
+const topIcons = ["bell", "message", "moon"];
 
 const icons: Record<string, any> = {
   upload: (
@@ -100,36 +85,64 @@ const icons: Record<string, any> = {
   ),
 };
 
-export default function ExportPage() {
+export default function Header() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <section className={styles.hero}>
-          <h1>Export Your Financial Data</h1>
-          <p>
-            Choose your preferred application to seamlessly export your
-            transaction history and financial reports. Your data will be
-            securely transferred to the selected service.
-          </p>
-        </section>
+    // <header style={{ padding: "16px", borderBottom: "1px solid #eee" }}>
+    //   <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+    //     <Link href="/" style={{ fontWeight: 700 }}>
+    //       Budgetly
+    //     </Link>
 
-        <section className={styles.cardGrid}>
-          {exportOptions.map((option) => (
-            <article className={styles.card} key={option.title}>
-              <div className={styles.cardIcon}>{icons.sheet}</div>
-              <h2>{option.title}</h2>
-              <p>{option.description}</p>
-              <button className={styles.ctaButton} type="button">
-                {option.action}
-              </button>
-            </article>
+    //     <nav style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+    //       {nav.map((item) => (
+    //         <Link key={item.href} href={item.href}>
+    //           {item.label}
+    //         </Link>
+    //       ))}
+    //     </nav>
+    //   </div>
+    // </header>
+    <header className={styles.header}>
+      <div className={styles.topBar}>
+        <div className={styles.brand}>
+          <span className={styles.logoMark}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="2" y="2" width="20" height="20" rx="6" />
+              <path d="M7 15l3-3 3 2 4-5" />
+              <path d="M7 7v8h8" />
+            </svg>
+          </span>
+          <span className={styles.brandName}>Budgetly</span>
+        </div>
+        <div className={styles.topIcons}>
+          {topIcons.map((icon) => (
+            <button
+              className={styles.iconButton}
+              type="button"
+              key={icon}
+              aria-label={icon}
+            >
+              {icons[icon]}
+            </button>
           ))}
-        </section>
-      </main>
-
-      <footer className={styles.footer}>
-        <p>(c) 2026 FinTrack. All rights reserved.</p>
-      </footer>
-    </div>
+        </div>
+      </div>
+      <nav className={styles.navTabs} aria-label="Primary">
+        {navItems.map((item) => (
+          <button
+            type="button"
+            key={item.label}
+            className={`${styles.navButton} ${
+              item.active ? styles.navActive : ""
+            }`}
+          >
+            <Link key={item.href} href={item.href}>
+              <span className={styles.navIcon}>{icons[item.icon]}</span>
+              <span>{item.label}</span>
+            </Link>
+          </button>
+        ))}
+      </nav>
+    </header>
   );
 }
