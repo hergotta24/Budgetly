@@ -87,21 +87,6 @@ const icons: Record<string, any> = {
 
 export default function Header() {
   return (
-    // <header style={{ padding: "16px", borderBottom: "1px solid #eee" }}>
-    //   <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-    //     <Link href="/" style={{ fontWeight: 700 }}>
-    //       Budgetly
-    //     </Link>
-
-    //     <nav style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-    //       {nav.map((item) => (
-    //         <Link key={item.href} href={item.href}>
-    //           {item.label}
-    //         </Link>
-    //       ))}
-    //     </nav>
-    //   </div>
-    // </header>
     <header className={styles.header}>
       <div className={styles.topBar}>
         <div className={styles.brand}>
