@@ -2,22 +2,69 @@
 
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addTransactions } from "@/store/slices/transactionSlice";
-import type { Transaction } from "@/types/transations";
+import { addTransactions } from "@/store/slices/importSlice";
+import type { Transaction } from "@/types/transactions";
 import type { UploadedFile } from "@/types/importedFile";
 import styles from "./page.module.css";
 import { useEffect } from "react";
+import Papa from 'papaparse';
+import { read } from "fs";
 
 
 
+let possibleDescriptionValues = [
+  "description",
+  "memo",
+  "details",
+  "merchant",
+  "name",
+];
 
+let possibleAccountIdValues = [
+  "account",
+  "account id",
+  "accountnumber",
+  "account number",
+];
 
-const fileHistory = [
-  "transactions_Q1_2023.csv",
-  "bank_statement_april.csv",
-  "credit_card_activity.csv",
-  "march_spending_report.csv",
-  "investment_data_feb.csv",
+let possibleDateValues = [
+  "date",
+  "transaction date",
+  "posted date",
+  "post date",
+];
+
+let possibleBalanceValues = [
+  "balance",
+  "account balance",
+  "running balance",
+];
+
+let possibleAmountValues = [
+  "amount",
+  "transaction amount",
+  "amt",
+  "value",
+  "total",
+  "signed amount",
+];
+
+let possibleDebitValues = [
+  "debit",
+  "withdrawal",
+  "withdraw",
+  "outflow",
+  "charge",
+  "payment",
+  "expense",
+];
+
+let possibleCreditValues = [
+  "credit",
+  "deposit",
+  "inflow",
+  "refund",
+  "income",
 ];
 
 
@@ -50,7 +97,7 @@ export default function Home() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const files = useAppSelector((s) => s.transactions.files);
+  const files = useAppSelector((s) => s.importedFiles.files);
   const displayedFiles = Array.from(
     new Set(
       files.length > 0
@@ -64,38 +111,114 @@ export default function Home() {
     if (files.length === 0) router.replace("/import");
   }, [files.length, router]);
 
-  async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
-    const fileList = event.target.files;
-    if (!fileList || fileList.length === 0) return;
+function normalizeHeaderKey(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
 
-    const userfiles = Array.from(fileList);
-    const uploadedFiles: UploadedFile[] = userfiles.map((file) => {
-      const parsed: Transaction[] = [
-        {
-          id: crypto.randomUUID(),
-          accountId: "checking",
-          date: "2026-01-22",
-          description: `Target (${file.name})`,
-          amount: -45.23,
-          category: "Shopping",
-        },
-      ];
+function readField(
+  row: Record<string, unknown>,
+  aliases: string[]
+): string | number | undefined {
+  const aliasSet = new Set(aliases.map(normalizeHeaderKey));
+  for (const [key, value] of Object.entries(row)) {
+    if (aliasSet.has(normalizeHeaderKey(key))) return value as string | number;
+  }
+  return undefined;
+}
 
-      return {
-        fileName: file.name,
-        transactions: parsed,
-      };
+function parseNumericValue(value: unknown): number | undefined {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+  if (typeof value !== "string") return undefined;
+
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return undefined;
+
+  const isNegative = /^\s*\(.*\)\s*$/.test(trimmed) || /-\s*$/.test(trimmed);
+  const normalized = trimmed
+    .replace(/[$,]/g, "")
+    .replace(/[()]/g, "")
+    .replace(/\s+/g, "");
+
+  if (!/^-?\d*\.?\d+$/.test(normalized)) return undefined;
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed)) return undefined;
+
+  return isNegative ? -Math.abs(parsed) : parsed;
+}
+
+function resolveTransactionAmount(row: Record<string, unknown>): number {
+  const directAmount = parseNumericValue(readField(row, possibleAmountValues));
+  if (directAmount !== undefined) return directAmount;
+
+  const debit = parseNumericValue(readField(row, possibleDebitValues)) ?? 0;
+  const credit = parseNumericValue(readField(row, possibleCreditValues)) ?? 0;
+
+  if (debit !== 0 || credit !== 0) {
+    return credit - Math.abs(debit);
+  }
+
+  return 0;
+}
+
+function parseCsvFileToTransactions(file: File): Promise<Transaction[]> {
+  return new Promise((resolve, reject) => {
+    Papa.parse<any>(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        // Papa can finish "successfully" but still have row-level errors
+        if (results.errors?.length) {
+          reject(results.errors);
+          return;
+        }
+
+        let userTransactions: Transaction[] = [];
+
+        for (const transaction of results.data) {
+          const id = crypto.randomUUID();
+          const date = readField(transaction, possibleDateValues);
+          const description = readField(transaction, possibleDescriptionValues);
+          const amount = resolveTransactionAmount(transaction);
+          const accountId = readField(transaction, possibleAccountIdValues);
+          const balance = readField(transaction, possibleBalanceValues);
+          const category = "uncategorized";
+          userTransactions.push({ id, date, description, amount, accountId, category, balance } as Transaction);
+        }
+        resolve(userTransactions);
+      },
+      error: (err) => reject(err),
     });
+  });
+}
 
-    // 2) store in Redux (always append)
-    dispatch(
-      addTransactions({
-        files: uploadedFiles,
+
+async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
+  const fileList = event.target.files;
+  if (!fileList || fileList.length === 0) return;
+
+  const userfiles = Array.from(fileList);
+
+  try {
+    const uploadedFiles: UploadedFile[] = await Promise.all(
+      userfiles.map(async (file) => {
+        const parsed = await parseCsvFileToTransactions(file);
+
+        return {
+          fileName: file.name,
+          transactions: parsed,
+        };
       })
     );
 
+    dispatch(addTransactions({ files: uploadedFiles }));
+
     event.target.value = "";
+  } catch (err) {
+    console.error("Failed to parse CSV(s):", err);
+    // optionally show a toast / UI error
   }
+}
 
   return (
     <div className={styles.page}>

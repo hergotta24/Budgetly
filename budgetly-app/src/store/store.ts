@@ -1,11 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import flowReducer from "./flowSlice";
-import transactionReducer from "./slices/transactionSlice";
+import importReducer from "./slices/importSlice";
 
 export const store = configureStore({
   reducer: {
-    flow: flowReducer,
-    transactions: transactionReducer,
+    importedFiles: importReducer,
   },
 });
 

@@ -1,17 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { Transaction } from "../../types/transations";
 import type { UploadedFile } from "../../types/importedFile";
 
-type TransactionsState = {
+type ImportState = {
   files : UploadedFile[];
 };
 
-const initialState: TransactionsState = {
+const initialState: ImportState = {
   files: [],
 };
 
-const transactionsSlice = createSlice({
-  name: "transactions",
+const importSlice = createSlice({
+  name: "import",
   initialState,
   reducers: {
     setTransactions: (
@@ -28,13 +27,13 @@ const transactionsSlice = createSlice({
       state.files.push(...action.payload.files);
     },
 
-    clearTransactions: (state: TransactionsState) => {
+    clearTransactions: (state: ImportState) => {
       state.files = [];
     },
   },
 });
 
 export const { setTransactions, addTransactions, clearTransactions } =
-  transactionsSlice.actions;
+  importSlice.actions;
 
-export default transactionsSlice.reducer;
+export default importSlice.reducer;

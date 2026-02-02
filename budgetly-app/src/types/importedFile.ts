@@ -1,4 +1,4 @@
-import { Transaction } from "./transations";
+import { Transaction } from "./transactions";
 
 export type UploadedFile = {
   fileName: string;
