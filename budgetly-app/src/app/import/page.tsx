@@ -2,9 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addTransactions } from "@/store/slices/importSlice";
-import type { Transaction } from "@/types/transactions";
-import type { UploadedFile } from "@/types/importedFile";
+import { addTransactions } from "@/store/slices/transactionsSlice";
+import type { Transaction } from "@/types/transaction";
 import styles from "./page.module.css";
 import { useEffect } from "react";
 import Papa from 'papaparse';
@@ -97,19 +96,13 @@ export default function Home() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const files = useAppSelector((s) => s.importedFiles.files);
-  const displayedFiles = Array.from(
-    new Set(
-      files.length > 0
-        ? [...files]
-        : []
-    )
-  );
+  const transactions = useAppSelector((s) => s.transactions.transactions);
+  const displayedTransactionImportedFrom = ["file1.csv", "file2.csv"]; 
 
   useEffect(() => {
     // If user refreshes or visits directly, Redux is empty (memory-only).
-    if (files.length === 0) router.replace("/import");
-  }, [files.length, router]);
+    if (transactions.length === 0) router.replace("/import");
+  }, [transactions.length, router]);
 
 function normalizeHeaderKey(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -161,59 +154,52 @@ function resolveTransactionAmount(row: Record<string, unknown>): number {
   return 0;
 }
 
-function parseCsvFileToTransactions(file: File): Promise<Transaction[]> {
-  return new Promise((resolve, reject) => {
-    Papa.parse<any>(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        // Papa can finish "successfully" but still have row-level errors
-        if (results.errors?.length) {
-          reject(results.errors);
-          return;
-        }
-
-        let userTransactions: Transaction[] = [];
-
-        for (const transaction of results.data) {
-          const id = crypto.randomUUID();
-          const date = readField(transaction, possibleDateValues);
-          const description = readField(transaction, possibleDescriptionValues);
-          const amount = resolveTransactionAmount(transaction);
-          const accountId = readField(transaction, possibleAccountIdValues);
-          const balance = readField(transaction, possibleBalanceValues);
-          const category = "uncategorized";
-          userTransactions.push({ id, date, description, amount, accountId, category, balance } as Transaction);
-        }
-        resolve(userTransactions);
-      },
-      error: (err) => reject(err),
-    });
-  });
-}
-
-
 async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
   const fileList = event.target.files;
   if (!fileList || fileList.length === 0) return;
 
   const userfiles = Array.from(fileList);
-
   try {
-    const uploadedFiles: UploadedFile[] = await Promise.all(
-      userfiles.map(async (file) => {
-        const parsed = await parseCsvFileToTransactions(file);
+    const promisedTransactions = userfiles.map((file) => {
+      return new Promise<Transaction[]>((resolve) => {
+        const transactions: Transaction[] = [];
+        Papa.parse<any>(file, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            // Papa can finish "successfully" but still have row-level errors
+            if (results.errors?.length) {
+              resolve(transactions);
+              return;
+            }
 
-        return {
-          fileName: file.name,
-          transactions: parsed,
-        };
-      })
-    );
-
-    dispatch(addTransactions({ files: uploadedFiles }));
-
-    event.target.value = "";
+            for (const transaction of results.data) {
+              const id = crypto.randomUUID();
+              const dateField = readField(transaction, possibleDateValues);
+              const parsedDate = dateField ? new Date(dateField.toString()) : new Date();
+              const date = Number.isNaN(parsedDate.getTime())? new Date().toISOString(): parsedDate.toISOString();
+              const description = readField(transaction, possibleDescriptionValues);
+              const amount = resolveTransactionAmount(transaction);
+              const accountId = readField(transaction, possibleAccountIdValues);
+              const balance = readField(transaction, possibleBalanceValues);
+              const fromFile = file.name;
+              transactions.push({ 
+                id, 
+                date, 
+                description: description?.toString() || "", 
+                amount, 
+                accountId: accountId?.toString() || "", 
+                balance: parseNumericValue(balance) || 0, 
+                fromFile 
+              } as Transaction);
+            }
+            resolve(transactions);
+          },
+        });
+      });
+    });
+    const allTransactions = (await Promise.all(promisedTransactions)).flat();
+    dispatch(addTransactions({ transactions: allTransactions }));
   } catch (err) {
     console.error("Failed to parse CSV(s):", err);
     // optionally show a toast / UI error
@@ -251,7 +237,7 @@ async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
             <span className={styles.sectionNote}>Last 30 days</span>
           </div>
           <ul className={styles.fileList}>
-            {displayedFiles.length === 0 ? (
+            {displayedTransactionImportedFrom.length === 0 ? (
               <li className={styles.fileItem}>
                 <div className={styles.fileMeta}>
                   <span className={styles.fileIcon}>{icons.file}</span>
@@ -264,8 +250,8 @@ async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
                 </div>
               </li>
             ) : (
-              displayedFiles.map((file) => {
-                const fileName = (file as UploadedFile).fileName ?? "";
+              displayedTransactionImportedFrom.map((file) => {
+                const fileName = file ?? "";
                 return (
                   <li className={styles.fileItem} key={fileName}>
                     <div className={styles.fileMeta}>

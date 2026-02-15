@@ -1,4 +1,12 @@
+"use client";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useRouter } from "next/navigation";
+import { addTransactions } from "@/store/slices/transactionsSlice";
+import type { Transaction } from "@/types/transaction";
 import styles from "./page.module.css";
+import { useEffect } from "react";
+import Papa from 'papaparse';
+import { read } from "fs";
 
 const navItems = [
   { label: "Import", icon: "upload", active: false },
@@ -16,57 +24,6 @@ const filters = {
   accounts: ["All Accounts", "Checking", "Savings", "Credit Card"],
 };
 
-const transactions = [
-  {
-    date: "2023-10-26",
-    description: "Groceries at SuperMart",
-    category: "Groceries",
-    amount: -75.2,
-    account: "Checking",
-  },
-  {
-    date: "2023-10-25",
-    description: "Monthly Salary",
-    category: "Income",
-    amount: 3500,
-    account: "Savings",
-  },
-  {
-    date: "2023-10-24",
-    description: "Electricity Bill",
-    category: "Bills",
-    amount: -120.5,
-    account: "Checking",
-  },
-  {
-    date: "2023-10-23",
-    description: "Dinner with friends",
-    category: "Dining Out",
-    amount: -45,
-    account: "Credit Card",
-  },
-  {
-    date: "2023-10-22",
-    description: "Internet Service",
-    category: "Utilities",
-    amount: -60,
-    account: "Checking",
-  },
-  {
-    date: "2023-10-21",
-    description: "Freelance Payment",
-    category: "Income",
-    amount: 800,
-    account: "Savings",
-  },
-  {
-    date: "2023-10-20",
-    description: "Coffee",
-    category: "Dining Out",
-    amount: -4.5,
-    account: "Checking",
-  },
-];
 
 const icons: Record<string, any> = {
   upload: (
@@ -154,6 +111,16 @@ const formatAmount = (amount: number) => {
 };
 
 export default function TransactionsPage() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  
+  const transactions = useAppSelector((s) => s.transactions.transactions);
+
+  useEffect(() => {
+    // If user refreshes or visits directly, Redux is empty (memory-only).
+    if (transactions.length === 0) router.replace("/import");
+  }, [transactions.length, router]);
+  
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -210,19 +177,19 @@ export default function TransactionsPage() {
                   </td>
                   <td>
                     <span className={styles.categoryChip}>
-                      {transaction.category}
+                      {""}
                     </span>
                   </td>
                   <td
                     className={
-                      transaction.amount < 0
+                      Number(transaction.amount) < 0
                         ? styles.amountNegative
                         : styles.amountPositive
                     }
                   >
-                    {formatAmount(transaction.amount)}
+                    {formatAmount(Number(transaction.amount))}
                   </td>
-                  <td className={styles.account}>{transaction.account}</td>
+                  <td className={styles.account}>{transaction.accountId}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import importReducer from "./slices/importSlice";
+import transactionsReducer from "./slices/transactionsSlice";
+import categoriesReducer from "./slices/categoriesSlice";
 
 export const store = configureStore({
   reducer: {
-    importedFiles: importReducer,
+    transactions: transactionsReducer,
+    categories: categoriesReducer,
   },
 });
 
