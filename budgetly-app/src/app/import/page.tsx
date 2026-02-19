@@ -7,7 +7,6 @@ import type { Transaction } from "@/types/transaction";
 import styles from "./page.module.css";
 import { useEffect } from "react";
 import Papa from 'papaparse';
-import { read } from "fs";
 
 
 
@@ -97,7 +96,13 @@ export default function Home() {
   const dispatch = useAppDispatch();
 
   const transactions = useAppSelector((s) => s.transactions.transactions);
-  const displayedTransactionImportedFrom = ["file1.csv", "file2.csv"]; 
+  const displayedTransactionImportedFrom = Array.from(
+    new Set(
+      transactions
+        .map((transaction) => transaction.fromFile?.toString().trim() || "")
+        .filter((fileName) => fileName.length > 0)
+    )
+  );
 
   useEffect(() => {
     // If user refreshes or visits directly, Redux is empty (memory-only).
@@ -158,9 +163,9 @@ async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
   const fileList = event.target.files;
   if (!fileList || fileList.length === 0) return;
 
-  const userfiles = Array.from(fileList);
+  const userFiles = Array.from(fileList);
   try {
-    const promisedTransactions = userfiles.map((file) => {
+    const promisedTransactions = userFiles.map((file) => {
       return new Promise<Transaction[]>((resolve) => {
         const transactions: Transaction[] = [];
         Papa.parse<any>(file, {
@@ -198,8 +203,12 @@ async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
         });
       });
     });
+
     const allTransactions = (await Promise.all(promisedTransactions)).flat();
+    if (allTransactions.length === 0) return;
+
     dispatch(addTransactions({ transactions: allTransactions }));
+    event.target.value = "";
   } catch (err) {
     console.error("Failed to parse CSV(s):", err);
     // optionally show a toast / UI error

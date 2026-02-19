@@ -3,8 +3,8 @@ import styles from "./Header.module.css";
 
 const navItems = [
   { href: "/import", label: "Import", icon: "upload", active: true },
-  { href: "/transactions", label: "Transactions", icon: "list", active: false },
   { href: "/budget", label: "Budget", icon: "wallet", active: false },
+  { href: "/transactions", label: "Transactions", icon: "list", active: false },
   { href: "/dashboard", label: "Dashboard", icon: "grid", active: false },
   { href: "/spending", label: "Spending", icon: "card", active: false },
   { href: "/export", label: "Export", icon: "download", active: false },
