@@ -345,6 +345,64 @@
   stroke-linejoin: round;
 }
 
+.hero {
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45));
+  border-radius: 18px;
+  padding: 28px 24px;
+  border: 1px solid rgba(15, 33, 31, 0.06);
+  box-shadow: 0 16px 30px rgba(17,36,35,0.06);
+}
+
+.heroInner {
+  max-width: 880px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 28px;
+  margin: 0 0 8px 0;
+}
+
+.lead {
+  font-size: 16px;
+  color: #3b4b4f;
+  margin: 0 0 6px 0;
+}
+
+.small {
+  font-size: 13px;
+  color: #6e7b7d;
+}
+
+.overview {
+  display: block;
+  gap: 16px;
+}
+
+.overviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.overviewCard {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid rgba(15, 33, 31, 0.06);
+}
+
+.cardIcon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: #1f9d88;
+  margin-bottom: 8px;
+}
+
 .footer {
   margin-top: auto;
   padding: 26px clamp(20px, 4vw, 48px) 36px;

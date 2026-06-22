@@ -9,14 +9,6 @@ const navItems = [
   { label: "Export", icon: "download", active: false },
 ];
 
-const fileHistory = [
-  "transactions_Q1_2023.csv",
-  "bank_statement_april.csv",
-  "credit_card_activity.csv",
-  "march_spending_report.csv",
-  "investment_data_feb.csv",
-];
-
 const topIcons = ["bell", "message", "moon"];
 
 const icons: Record<string, any> = {
@@ -100,82 +92,33 @@ const icons: Record<string, any> = {
 export default function Home() {
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <div className={styles.topBar}>
-          <div className={styles.brand}>
-            <span className={styles.logoMark}>
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <rect x="2" y="2" width="20" height="20" rx="6" />
-                <path d="M7 15l3-3 3 2 4-5" />
-                <path d="M7 7v8h8" />
-              </svg>
-            </span>
-            <span className={styles.brandName}>Budgetly</span>
-          </div>
-          <div className={styles.topIcons}>
-            {topIcons.map((icon) => (
-              <button
-                className={styles.iconButton}
-                type="button"
-                key={icon}
-                aria-label={icon}
-              >
-                {icons[icon]}
-              </button>
-            ))}
-          </div>
-        </div>
-        <nav className={styles.navTabs} aria-label="Primary">
-          {navItems.map((item) => (
-            <button
-              type="button"
-              key={item.label}
-              className={`${styles.navButton} ${
-                item.active ? styles.navActive : ""
-              }`}
-            >
-              <span className={styles.navIcon}>{icons[item.icon]}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </header>
-
       <main className={styles.main}>
-        <section className={styles.dropzoneCard}>
-          <div className={styles.dropIcon}>{icons.upload}</div>
-          <h1>Drag & drop your CSV files here</h1>
-          <p>or click the button below to browse</p>
-          <button className={styles.uploadButton} type="button">
-            Upload Files
-          </button>
+        <section className={styles.hero}>
+          <div className={styles.heroInner}>
+            <h1>Welcome to Budgetly</h1>
+            <p className={styles.lead}>Import your financial data, review transactions, set budgets, and visualize your spending — all in one place.</p>
+            <p className={styles.small}>Use the navigation above to jump to Import, Transactions, Budget, Dashboard, Spending, or Export.</p>
+          </div>
         </section>
 
-        <section className={styles.history}>
-          <div className={styles.sectionHeader}>
-            <h2>Previously Imported Files</h2>
-            <span className={styles.sectionNote}>Last 30 days</span>
-          </div>
-          <ul className={styles.fileList}>
-            {fileHistory.map((file) => (
-              <li className={styles.fileItem} key={file}>
-                <div className={styles.fileMeta}>
-                  <span className={styles.fileIcon}>{icons.file}</span>
-                  <div>
-                    <p className={styles.fileName}>{file}</p>
-                    <p className={styles.fileInfo}>CSV file - ready to import</p>
-                  </div>
-                </div>
-                <button
-                  className={styles.trashButton}
-                  type="button"
-                  aria-label={`Remove ${file}`}
-                >
-                  {icons.trash}
-                </button>
-              </li>
+        <section className={styles.overview}>
+          <h2>What you can do</h2>
+          <div className={styles.overviewGrid}>
+            {navItems.map((item) => (
+              <article key={item.label} className={styles.overviewCard}>
+                <div className={styles.cardIcon}>{icons[item.icon]}</div>
+                <h3>{item.label}</h3>
+                <p>
+                  {item.label === "Import" && "Bring in CSV files from banks or credit cards to start analyzing your data."}
+                  {item.label === "Transactions" && "Search, filter and review every transaction with quick categorization tools."}
+                  {item.label === "Budget" && "Create monthly budgets for categories and track progress against targets."}
+                  {item.label === "Dashboard" && "At-a-glance metrics, trends, and balances to understand your financial health."}
+                  {item.label === "Spending" && "Break down spending by category, merchant, and time to find saving opportunities."}
+                  {item.label === "Export" && "Download summary reports or cleaned CSVs to share or archive your data."}
+                </p>
+              </article>
             ))}
-          </ul>
+          </div>
         </section>
       </main>
 
