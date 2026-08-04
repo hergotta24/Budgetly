@@ -1,19 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  addBudget,
+  removeBudget,
+  updateBudgetLimit,
+  updateBudgetName,
+} from "@/store/slices/budgetsSlice";
 import styles from "./page.module.css";
-
-type BudgetCategory = {
-  id: string;
-  name: string;
-  limit: number;
-};
-
-const initialBudgets: BudgetCategory[] = [
-  { id: crypto.randomUUID(), name: "Groceries", limit: 500 },
-  { id: crypto.randomUUID(), name: "Dining Out", limit: 200 },
-  { id: crypto.randomUUID(), name: "Utilities", limit: 300 },
-];
 
 const formatCurrency = (value: number) =>
   value.toLocaleString("en-US", {
@@ -24,7 +19,8 @@ const formatCurrency = (value: number) =>
   });
 
 export default function BudgetPage() {
-  const [budgets, setBudgets] = useState<BudgetCategory[]>(initialBudgets);
+  const dispatch = useAppDispatch();
+  const budgets = useAppSelector((state) => state.budgets.budgets);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryLimit, setNewCategoryLimit] = useState("");
 
@@ -38,36 +34,34 @@ export default function BudgetPage() {
     const parsedLimit = Number(newCategoryLimit);
     if (!cleanedName || !Number.isFinite(parsedLimit) || parsedLimit < 0) return;
 
-    setBudgets((current) => [
-      ...current,
-      { id: crypto.randomUUID(), name: cleanedName, limit: parsedLimit },
-    ]);
+    dispatch(
+      addBudget({
+        id: crypto.randomUUID(),
+        name: cleanedName,
+        limit: parsedLimit,
+      }),
+    );
 
     setNewCategoryName("");
     setNewCategoryLimit("");
   };
 
   const handleCategoryChange = (id: string, value: string) => {
-    setBudgets((current) =>
-      current.map((item) => (item.id === id ? { ...item, name: value } : item))
-    );
+    dispatch(updateBudgetName({ id, name: value }));
   };
 
   const handleLimitChange = (id: string, value: string) => {
-    setBudgets((current) =>
-      current.map((item) => {
-        if (item.id !== id) return item;
-        const parsed = Number(value);
-        return {
-          ...item,
-          limit: Number.isFinite(parsed) && parsed >= 0 ? parsed : 0,
-        };
-      })
+    const parsed = Number(value);
+    dispatch(
+      updateBudgetLimit({
+        id,
+        limit: Number.isFinite(parsed) && parsed >= 0 ? parsed : 0,
+      }),
     );
   };
 
   const handleRemoveCategory = (id: string) => {
-    setBudgets((current) => current.filter((item) => item.id !== id));
+    dispatch(removeBudget({ id }));
   };
 
   return (

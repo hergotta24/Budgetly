@@ -1,17 +1,23 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { useAppDispatch } from "@/store/hooks";
+import { deleteWorkspace } from "@/store/persistence";
+import { clearWorkspace } from "@/store/store";
 import styles from "./Header.module.css";
 
 const navItems = [
-  { href: "/import", label: "Import", icon: "upload", active: true },
-  { href: "/budget", label: "Budget", icon: "wallet", active: false },
-  { href: "/transactions", label: "Transactions", icon: "list", active: false },
-  { href: "/dashboard", label: "Dashboard", icon: "grid", active: false },
-  { href: "/spending", label: "Spending", icon: "card", active: false },
-  { href: "/export", label: "Export", icon: "download", active: false },
+  { href: "/import", label: "Import", icon: "upload" },
+  { href: "/budget", label: "Budget", icon: "wallet" },
+  { href: "/transactions", label: "Transactions", icon: "list" },
+  { href: "/dashboard", label: "Dashboard", icon: "grid" },
+  { href: "/spending", label: "Spending", icon: "card" },
+  { href: "/export", label: "Export", icon: "download" },
 ];
-const topIcons = ["bell", "message", "moon"];
 
-const icons: Record<string, any> = {
+const icons: Record<string, React.ReactNode> = {
   upload: (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M12 16V6" />
@@ -86,48 +92,97 @@ const icons: Record<string, any> = {
 };
 
 export default function Header() {
+  const dispatch = useAppDispatch();
+  const pathname = usePathname();
+  const [showClearConfirmation, setShowClearConfirmation] = useState(false);
+  const [clearError, setClearError] = useState<string | null>(null);
+
+  const handleClearWorkspace = () => {
+    try {
+      deleteWorkspace(window.localStorage);
+      dispatch(clearWorkspace());
+      setClearError(null);
+      setShowClearConfirmation(false);
+    } catch {
+      setClearError(
+        "The browser blocked local storage access. The workspace was not cleared.",
+      );
+    }
+  };
+
   return (
-    <header className={styles.header}>
-      <div className={styles.topBar}>
-        <div className={styles.brand}>
-          <span className={styles.logoMark}>
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <rect x="2" y="2" width="20" height="20" rx="6" />
-              <path d="M7 15l3-3 3 2 4-5" />
-              <path d="M7 7v8h8" />
-            </svg>
-          </span>
-          <span className={styles.brandName}>Budgetly</span>
-        </div>
-        <div className={styles.topIcons}>
-          {topIcons.map((icon) => (
-            <button
-              className={styles.iconButton}
-              type="button"
-              key={icon}
-              aria-label={icon}
-            >
-              {icons[icon]}
-            </button>
-          ))}
-        </div>
-      </div>
-      <nav className={styles.navTabs} aria-label="Primary">
-        {navItems.map((item) => (
+    <>
+      <header className={styles.header}>
+        <div className={styles.topBar}>
+          <div className={styles.brand}>
+            <span className={styles.logoMark}>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <rect x="2" y="2" width="20" height="20" rx="6" />
+                <path d="M7 15l3-3 3 2 4-5" />
+                <path d="M7 7v8h8" />
+              </svg>
+            </span>
+            <span className={styles.brandName}>Budgetly</span>
+          </div>
           <button
+            className={styles.clearButton}
             type="button"
-            key={item.label}
-            className={`${styles.navButton} ${
-              item.active ? styles.navActive : ""
-            }`}
+            onClick={() => setShowClearConfirmation(true)}
           >
-            <Link key={item.href} href={item.href}>
+            Clear workspace
+          </button>
+        </div>
+        <nav className={styles.navTabs} aria-label="Primary">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`${styles.navButton} ${
+                pathname === item.href ? styles.navActive : ""
+              }`}
+            >
               <span className={styles.navIcon}>{icons[item.icon]}</span>
               <span>{item.label}</span>
             </Link>
-          </button>
-        ))}
-      </nav>
-    </header>
+          ))}
+        </nav>
+      </header>
+
+      {showClearConfirmation && (
+        <div className={styles.modalBackdrop}>
+          <section
+            className={styles.confirmDialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="clear-workspace-title"
+          >
+            <h2 id="clear-workspace-title">Permanently clear workspace?</h2>
+            <p>
+              This deletes all transactions, import history, categories, and
+              budgets stored in this browser. This cannot be undone.
+            </p>
+            {clearError && <p className={styles.clearError}>{clearError}</p>}
+            <div className={styles.dialogActions}>
+              <button
+                type="button"
+                onClick={() => {
+                  setClearError(null);
+                  setShowClearConfirmation(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.confirmClearButton}
+                onClick={handleClearWorkspace}
+              >
+                Clear workspace
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+    </>
   );
 }

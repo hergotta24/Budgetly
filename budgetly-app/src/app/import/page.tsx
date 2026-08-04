@@ -1,16 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addTransactions } from "@/store/slices/transactionsSlice";
+import { importFiles, removeImportedFile } from "@/store/workspaceActions";
+import type { ImportedFile } from "@/types/importedFile";
 import type { Transaction } from "@/types/transaction";
 import styles from "./page.module.css";
-import { useEffect } from "react";
 import Papa from 'papaparse';
 
 
 
-let possibleDescriptionValues = [
+const possibleDescriptionValues = [
   "description",
   "memo",
   "details",
@@ -18,27 +17,27 @@ let possibleDescriptionValues = [
   "name",
 ];
 
-let possibleAccountIdValues = [
+const possibleAccountIdValues = [
   "account",
   "account id",
   "accountnumber",
   "account number",
 ];
 
-let possibleDateValues = [
+const possibleDateValues = [
   "date",
   "transaction date",
   "posted date",
   "post date",
 ];
 
-let possibleBalanceValues = [
+const possibleBalanceValues = [
   "balance",
   "account balance",
   "running balance",
 ];
 
-let possibleAmountValues = [
+const possibleAmountValues = [
   "amount",
   "transaction amount",
   "amt",
@@ -47,7 +46,7 @@ let possibleAmountValues = [
   "signed amount",
 ];
 
-let possibleDebitValues = [
+const possibleDebitValues = [
   "debit",
   "withdrawal",
   "withdraw",
@@ -57,7 +56,7 @@ let possibleDebitValues = [
   "expense",
 ];
 
-let possibleCreditValues = [
+const possibleCreditValues = [
   "credit",
   "deposit",
   "inflow",
@@ -66,9 +65,7 @@ let possibleCreditValues = [
 ];
 
 
-const topIcons = ["bell", "message", "moon"];
-
-const icons: Record<string, any> = {
+const icons: Record<string, React.ReactNode> = {
   upload: (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M12 16V6" />
@@ -92,22 +89,9 @@ const icons: Record<string, any> = {
 };
 
 export default function Home() {
-  const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const transactions = useAppSelector((s) => s.transactions.transactions);
-  const displayedTransactionImportedFrom = Array.from(
-    new Set(
-      transactions
-        .map((transaction) => transaction.fromFile?.toString().trim() || "")
-        .filter((fileName) => fileName.length > 0)
-    )
-  );
-
-  useEffect(() => {
-    // If user refreshes or visits directly, Redux is empty (memory-only).
-    if (transactions.length === 0) router.replace("/import");
-  }, [transactions.length, router]);
+  const importedFiles = useAppSelector((state) => state.imports.imports);
 
 function normalizeHeaderKey(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -165,16 +149,28 @@ async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
 
   const userFiles = Array.from(fileList);
   try {
-    const promisedTransactions = userFiles.map((file) => {
-      return new Promise<Transaction[]>((resolve) => {
+    const promisedImports = userFiles.map((file) => {
+      return new Promise<{
+        transactions: Transaction[];
+        importedFile: ImportedFile;
+      }>((resolve) => {
+        const importId = crypto.randomUUID();
         const transactions: Transaction[] = [];
-        Papa.parse<any>(file, {
+        Papa.parse<Record<string, unknown>>(file, {
           header: true,
           skipEmptyLines: true,
           complete: (results) => {
             // Papa can finish "successfully" but still have row-level errors
             if (results.errors?.length) {
-              resolve(transactions);
+              resolve({
+                transactions,
+                importedFile: {
+                  id: importId,
+                  fileName: file.name,
+                  importedAt: new Date().toISOString(),
+                  transactionCount: 0,
+                },
+              });
               return;
             }
 
@@ -195,19 +191,35 @@ async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
                 amount, 
                 accountId: accountId?.toString() || "", 
                 balance: parseNumericValue(balance) || 0, 
-                fromFile 
+                fromFile,
+                importId,
               } as Transaction);
             }
-            resolve(transactions);
+            resolve({
+              transactions,
+              importedFile: {
+                id: importId,
+                fileName: file.name,
+                importedAt: new Date().toISOString(),
+                transactionCount: transactions.length,
+              },
+            });
           },
         });
       });
     });
 
-    const allTransactions = (await Promise.all(promisedTransactions)).flat();
-    if (allTransactions.length === 0) return;
+    const parsedImports = (await Promise.all(promisedImports)).filter(
+      (result) => result.transactions.length > 0,
+    );
+    if (parsedImports.length === 0) return;
 
-    dispatch(addTransactions({ transactions: allTransactions }));
+    dispatch(
+      importFiles({
+        transactions: parsedImports.flatMap((result) => result.transactions),
+        imports: parsedImports.map((result) => result.importedFile),
+      }),
+    );
     event.target.value = "";
   } catch (err) {
     console.error("Failed to parse CSV(s):", err);
@@ -246,7 +258,7 @@ async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
             <span className={styles.sectionNote}>Last 30 days</span>
           </div>
           <ul className={styles.fileList}>
-            {displayedTransactionImportedFrom.length === 0 ? (
+            {importedFiles.length === 0 ? (
               <li className={styles.fileItem}>
                 <div className={styles.fileMeta}>
                   <span className={styles.fileIcon}>{icons.file}</span>
@@ -259,23 +271,25 @@ async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
                 </div>
               </li>
             ) : (
-              displayedTransactionImportedFrom.map((file) => {
-                const fileName = file ?? "";
+              importedFiles.map((file) => {
                 return (
-                  <li className={styles.fileItem} key={fileName}>
+                  <li className={styles.fileItem} key={file.id}>
                     <div className={styles.fileMeta}>
                       <span className={styles.fileIcon}>{icons.file}</span>
                       <div>
-                        <p className={styles.fileName}>{fileName}</p>
+                        <p className={styles.fileName}>{file.fileName}</p>
                         <p className={styles.fileInfo}>
-                          CSV file - ready to import
+                          {file.transactionCount} transactions · imported {new Date(file.importedAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
                     <button
                       className={styles.trashButton}
                       type="button"
-                      aria-label={`Remove ${fileName}`}
+                      aria-label={`Remove ${file.fileName}`}
+                      onClick={() =>
+                        dispatch(removeImportedFile({ importId: file.id }))
+                      }
                     >
                       {icons.trash}
                     </button>

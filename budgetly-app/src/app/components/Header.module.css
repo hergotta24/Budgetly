@@ -92,6 +92,20 @@
   box-shadow: 0 8px 14px rgba(10, 30, 30, 0.12);
 }
 
+.clearButton {
+  padding: 9px 12px;
+  border: 1px solid #d0a7a2;
+  border-radius: 10px;
+  background: #fff;
+  color: #8f241c;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.clearButton:hover {
+  background: #fff3f2;
+}
+
 .navTabs {
   margin-top: 16px;
   display: grid;
@@ -117,6 +131,63 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(16, 30, 28, 0.55);
+}
+
+.confirmDialog {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 16px;
+  padding: 28px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(10, 26, 24, 0.24);
+}
+
+.confirmDialog h2,
+.confirmDialog p {
+  margin: 0;
+}
+
+.confirmDialog p {
+  color: #52635f;
+  line-height: 1.55;
+}
+
+.confirmDialog .clearError {
+  color: #9a241b;
+  font-weight: 600;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dialogActions button {
+  padding: 10px 14px;
+  border: 1px solid #b8c5c2;
+  border-radius: 10px;
+  background: #fff;
+  color: #243430;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.dialogActions .confirmClearButton {
+  border-color: #b42318;
+  background: #b42318;
+  color: #fff;
 }
 
 .navButton:hover {

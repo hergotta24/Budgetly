@@ -1,23 +1,6 @@
 "use client";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { useRouter } from "next/navigation";
-import { addTransactions } from "@/store/slices/transactionsSlice";
-import type { Transaction } from "@/types/transaction";
+import { useAppSelector } from "@/store/hooks";
 import styles from "./page.module.css";
-import { useEffect } from "react";
-import Papa from 'papaparse';
-import { read } from "fs";
-
-const navItems = [
-  { label: "Import", icon: "upload", active: false },
-  { label: "Transactions", icon: "list", active: true },
-  { label: "Budget", icon: "wallet", active: false },
-  { label: "Dashboard", icon: "grid", active: false },
-  { label: "Spending", icon: "card", active: false },
-  { label: "Export", icon: "download", active: false },
-];
-
-const topIcons = ["twitter", "linkedin", "moon"];
 
 const filters = {
   categories: ["All Categories", "Groceries", "Income", "Bills", "Dining Out", "Utilities"],
@@ -25,7 +8,7 @@ const filters = {
 };
 
 
-const icons: Record<string, any> = {
+const icons: Record<string, React.ReactNode> = {
   upload: (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M12 16V6" />
@@ -111,15 +94,7 @@ const formatAmount = (amount: number) => {
 };
 
 export default function TransactionsPage() {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
-  
   const transactions = useAppSelector((s) => s.transactions.transactions);
-
-  useEffect(() => {
-    // If user refreshes or visits directly, Redux is empty (memory-only).
-    if (transactions.length === 0) router.replace("/import");
-  }, [transactions.length, router]);
   
   return (
     <div className={styles.page}>
