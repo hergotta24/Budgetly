@@ -1,16 +1,5 @@
 import styles from "./page.module.css";
 
-const navItems = [
-  { label: "Import", icon: "upload", active: false },
-  { label: "Transactions", icon: "list", active: false },
-  { label: "Budget", icon: "wallet", active: false },
-  { label: "Dashboard", icon: "grid", active: false },
-  { label: "Spending", icon: "card", active: false },
-  { label: "Export", icon: "download", active: true },
-];
-
-const topIcons = ["twitter", "linkedin", "moon"];
-
 const exportOptions = [
   {
     title: "Google Sheets",
@@ -26,7 +15,7 @@ const exportOptions = [
   },
 ];
 
-const icons: Record<string, any> = {
+const icons: Record<string, React.ReactNode> = {
   upload: (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M12 16V6" />

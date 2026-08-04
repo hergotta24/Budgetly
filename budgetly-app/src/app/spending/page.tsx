@@ -40,7 +40,7 @@ const summary = {
   lowest: "Jan",
 };
 
-const icons: Record<string, any> = {
+const icons: Record<string, React.ReactNode> = {
   upload: (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M12 16V6" />

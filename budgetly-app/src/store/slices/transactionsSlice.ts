@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { Transaction } from "../../types/transaction";
+import { importFiles, removeImportedFile } from "../workspaceActions";
 
 type TransactionsState = {
   transactions: Transaction[];
@@ -30,6 +31,17 @@ const transactionsSlice = createSlice({
     clearTransactions: (state: TransactionsState) => {
       state.transactions = [];
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(importFiles, (state, action) => {
+        state.transactions.push(...action.payload.transactions);
+      })
+      .addCase(removeImportedFile, (state, action) => {
+        state.transactions = state.transactions.filter(
+          (transaction) => transaction.importId !== action.payload.importId,
+        );
+      });
   },
 });
 

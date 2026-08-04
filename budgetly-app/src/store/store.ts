@@ -1,14 +1,36 @@
-import { configureStore } from "@reduxjs/toolkit";
-import transactionsReducer from "./slices/transactionsSlice";
+import {
+  combineReducers,
+  configureStore,
+  createAction,
+  type Action,
+} from "@reduxjs/toolkit";
+import budgetsReducer from "./slices/budgetsSlice";
 import categoriesReducer from "./slices/categoriesSlice";
+import importsReducer from "./slices/importsSlice";
+import transactionsReducer from "./slices/transactionsSlice";
 
-export const store = configureStore({
-  reducer: {
-    transactions: transactionsReducer,
-    categories: categoriesReducer,
-  },
+const appReducer = combineReducers({
+  transactions: transactionsReducer,
+  imports: importsReducer,
+  categories: categoriesReducer,
+  budgets: budgetsReducer,
 });
 
-// Types for TS
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof appReducer>;
+
+export const hydrateWorkspace = createAction<RootState>("workspace/hydrate");
+export const clearWorkspace = createAction("workspace/clear");
+
+const rootReducer = (state: RootState | undefined, action: Action) => {
+  if (hydrateWorkspace.match(action)) return action.payload;
+  if (clearWorkspace.match(action)) return appReducer(undefined, action);
+  return appReducer(state, action);
+};
+
+export const makeStore = () =>
+  configureStore({
+    reducer: rootReducer,
+  });
+
+export type AppStore = ReturnType<typeof makeStore>;
+export type AppDispatch = AppStore["dispatch"];
