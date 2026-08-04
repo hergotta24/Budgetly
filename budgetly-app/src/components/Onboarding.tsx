@@ -54,8 +54,8 @@ export function Onboarding() {
           Turn a CSV export into a budget you actually use.
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-6 text-ink-muted">
-          Budgetly is a local-first budgeting app. There is no account to create and
-          no bank to connect — you bring the CSV, and everything is calculated here.
+          Budgetly is a local-first budgeting app. There is no account to create and no
+          bank to connect — you bring the CSV, and everything is calculated here.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
@@ -85,9 +85,9 @@ export function Onboarding() {
             <p className="font-medium text-ink">Your data stays in this browser</p>
             <p className="mt-1 text-ink-muted">
               Transactions, budgets and settings are stored in this browser&apos;s
-              IndexedDB. Nothing is uploaded, and clearing your browser data (or using
-              a different browser or device) means starting fresh — export a backup
-              from the Export page to move your data.
+              IndexedDB. Nothing is uploaded, and clearing your browser data (or using a
+              different browser or device) means starting fresh — export a backup from
+              the Export page to move your data.
             </p>
           </div>
         </div>

@@ -2,7 +2,13 @@
 
 import { useId, useMemo } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
-import { addMonths, currentMonth, formatMonth, monthRange, type IsoMonth } from "@/lib/date";
+import {
+  addMonths,
+  currentMonth,
+  formatMonth,
+  monthRange,
+  type IsoMonth,
+} from "@/lib/date";
 
 /**
  * Month selector shared by the dashboard and budgets.

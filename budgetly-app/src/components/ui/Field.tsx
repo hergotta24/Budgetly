@@ -29,7 +29,9 @@ export function Label({
       className="flex items-baseline justify-between gap-2 text-sm font-medium text-ink"
     >
       <span>{children}</span>
-      {hint ? <span className="text-xs font-normal text-ink-subtle">{hint}</span> : null}
+      {hint ? (
+        <span className="text-xs font-normal text-ink-subtle">{hint}</span>
+      ) : null}
     </label>
   );
 }

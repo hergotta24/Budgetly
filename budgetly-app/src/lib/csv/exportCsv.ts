@@ -35,9 +35,12 @@ export function transactionsToCsv(
     transaction.notes,
   ]);
 
-  const csv = Papa.unparse({ fields: [...EXPORT_HEADERS], data: rows }, {
-    newline: "\r\n",
-  });
+  const csv = Papa.unparse(
+    { fields: [...EXPORT_HEADERS], data: rows },
+    {
+      newline: "\r\n",
+    },
+  );
 
   // A UTF-8 BOM makes Excel read accented merchant names correctly; Google
   // Sheets and Papa Parse both skip it.

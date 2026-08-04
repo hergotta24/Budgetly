@@ -11,6 +11,7 @@ import { SelectField, TextAreaField, TextField } from "@/components/ui/Field";
 import { Dialog } from "@/components/ui/Dialog";
 import { ColorDot, EmptyState, LoadingPanel } from "@/components/ui/Primitives";
 import { useToast } from "@/components/ui/Toast";
+import { cn } from "@/lib/cn";
 import {
   DEFAULT_SORT,
   EMPTY_FILTERS,
@@ -45,6 +46,15 @@ export function TransactionsView() {
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [bulkCategoryId, setBulkCategoryId] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  /** Filters hidden behind the mobile toggle that are currently narrowing results. */
+  const extraFilterCount =
+    (filters.from ? 1 : 0) +
+    (filters.to ? 1 : 0) +
+    (filters.categoryIds.length > 0 ? 1 : 0) +
+    (filters.accountIds.length > 0 ? 1 : 0) +
+    (filters.flow !== "all" ? 1 : 0);
 
   const rows = useMemo(
     () => sortTransactions(filterTransactions(data.transactions, filters), sort),
@@ -53,10 +63,7 @@ export function TransactionsView() {
 
   // Paging resets itself whenever the query changes, without an effect: the page
   // count is only honored while it belongs to the current filter/sort combination.
-  const queryKey = useMemo(
-    () => JSON.stringify([filters, sort]),
-    [filters, sort],
-  );
+  const queryKey = useMemo(() => JSON.stringify([filters, sort]), [filters, sort]);
   const [page, setPage] = useState({ key: queryKey, count: PAGE_SIZE });
   const visible = page.key === queryKey ? page.count : PAGE_SIZE;
 
@@ -147,20 +154,40 @@ export function TransactionsView() {
 
       <Card className="mb-5">
         <CardBody className="flex flex-col gap-4">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="relative sm:col-span-2 xl:col-span-1">
-              <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-subtle" />
-              <TextField
-                label="Search descriptions"
-                hideLabel
-                type="search"
-                placeholder="Search merchant or description"
-                className="pl-9"
-                value={filters.search}
-                onChange={(event) => patchFilters({ search: event.target.value })}
-              />
-            </div>
+          <div className="relative">
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-subtle" />
+            <TextField
+              label="Search descriptions"
+              hideLabel
+              type="search"
+              placeholder="Search merchant or description"
+              className="pl-9"
+              value={filters.search}
+              onChange={(event) => patchFilters({ search: event.target.value })}
+            />
+          </div>
 
+          {/* On narrow screens the remaining filters would push the list off
+              screen, so they collapse behind a toggle. */}
+          <div className="md:hidden">
+            <Button
+              size="sm"
+              aria-expanded={filtersOpen}
+              aria-controls="transaction-filters"
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            >
+              {filtersOpen ? "Hide filters" : "More filters"}
+              {extraFilterCount > 0 ? ` (${extraFilterCount})` : ""}
+            </Button>
+          </div>
+
+          <div
+            id="transaction-filters"
+            className={cn(
+              "grid gap-3 sm:grid-cols-2 xl:grid-cols-4",
+              !filtersOpen && "hidden md:grid",
+            )}
+          >
             <TextField
               label="From date"
               type="date"
@@ -257,9 +284,7 @@ export function TransactionsView() {
 
       {selected.size > 0 ? (
         <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-brand/30 bg-brand-soft px-4 py-3">
-          <p className="text-sm font-medium text-ink">
-            {selected.size} selected
-          </p>
+          <p className="text-sm font-medium text-ink">{selected.size} selected</p>
           <div className="flex flex-wrap items-center gap-2">
             <label htmlFor="bulk-category" className="sr-only">
               Assign category to selected transactions
@@ -499,9 +524,7 @@ export function TransactionsView() {
             {rows.length > visible ? (
               <div className="border-t border-line-subtle px-4 py-3 text-center">
                 <Button
-                  onClick={() =>
-                    setPage({ key: queryKey, count: visible + PAGE_SIZE })
-                  }
+                  onClick={() => setPage({ key: queryKey, count: visible + PAGE_SIZE })}
                 >
                   Show {Math.min(PAGE_SIZE, rows.length - visible)} more
                 </Button>

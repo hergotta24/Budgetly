@@ -11,21 +11,17 @@ import { z } from "zod";
 /** Bumped whenever the backup envelope or record shapes change incompatibly. */
 export const BACKUP_SCHEMA_VERSION = 1;
 
-const isoDate = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected a YYYY-MM-DD date");
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected a YYYY-MM-DD date");
 
-const isoMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Expected a YYYY-MM month");
+const isoMonth = z
+  .string()
+  .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Expected a YYYY-MM month");
 
 const isoTimestamp = z.string().min(1);
 
 const id = z.string().min(1);
 
-const cents = z
-  .number()
-  .int("Monetary values must be whole cents")
-  .finite()
-  .safe();
+const cents = z.number().int("Monetary values must be whole cents").finite().safe();
 
 export const categoryKindSchema = z.enum(["expense", "income"]);
 
@@ -137,8 +133,7 @@ export type Backup = z.infer<typeof backupSchema>;
 export type SignConvention = ColumnMapping["signConvention"];
 
 export type BackupValidation =
-  | { ok: true; backup: Backup }
-  | { ok: false; errors: string[] };
+  { ok: true; backup: Backup } | { ok: false; errors: string[] };
 
 /** Validates a parsed JSON value as a Budgetly backup, collecting readable errors. */
 export function validateBackup(value: unknown): BackupValidation {

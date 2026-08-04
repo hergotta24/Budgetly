@@ -83,8 +83,7 @@ function resolveAmountCents(
   }
   if (parsed === 0) return { cents: null, issue: "Amount is zero." };
 
-  const cents =
-    mapping.signConvention === "positive-is-expense" ? -parsed : parsed;
+  const cents = mapping.signConvention === "positive-is-expense" ? -parsed : parsed;
   return { cents, issue: null };
 }
 
@@ -136,9 +135,7 @@ export function buildStagedFile(
     const date = parseDateToIso(rawDate, mapping.dateOrder);
     if (!date) {
       issues.push(
-        rawDate === ""
-          ? "Date is empty."
-          : `Could not read "${rawDate}" as a date.`,
+        rawDate === "" ? "Date is empty." : `Could not read "${rawDate}" as a date.`,
       );
     }
 

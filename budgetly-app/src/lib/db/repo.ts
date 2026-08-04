@@ -211,8 +211,8 @@ export async function deleteTransaction(id: string): Promise<Transaction | null>
 export async function bulkDeleteTransactions(ids: string[]): Promise<Transaction[]> {
   if (ids.length === 0) return [];
   const db = getDb();
-  const rows = (await db.transactions.bulkGet(ids)).filter(
-    (row): row is Transaction => Boolean(row),
+  const rows = (await db.transactions.bulkGet(ids)).filter((row): row is Transaction =>
+    Boolean(row),
   );
   await db.transactions.bulkDelete(rows.map((row) => row.id));
   return rows;
@@ -269,10 +269,7 @@ export async function deleteBudget(id: string): Promise<void> {
  * Copies every budget from `fromMonth` into `toMonth`, overwriting existing
  * limits for the same categories. Returns how many budgets were written.
  */
-export async function copyBudgets(
-  fromMonth: string,
-  toMonth: string,
-): Promise<number> {
+export async function copyBudgets(fromMonth: string, toMonth: string): Promise<number> {
   const db = getDb();
   const source = await db.budgets.where("month").equals(fromMonth).toArray();
   if (source.length === 0) return 0;
@@ -356,7 +353,11 @@ export async function removeDemoData(): Promise<void> {
 }
 
 export async function hasDemoData(): Promise<boolean> {
-  return (await getDb().imports.filter((row) => row.isDemo).count()) > 0;
+  return (
+    (await getDb()
+      .imports.filter((row) => row.isDemo)
+      .count()) > 0
+  );
 }
 
 /** Reads the whole database for a backup export. */

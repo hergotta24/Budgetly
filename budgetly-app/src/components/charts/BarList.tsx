@@ -55,9 +55,7 @@ export function BarList({
                 }}
               />
             </div>
-            {item.meta ? (
-              <p className="text-xs text-ink-subtle">{item.meta}</p>
-            ) : null}
+            {item.meta ? <p className="text-xs text-ink-subtle">{item.meta}</p> : null}
           </li>
         );
       })}

@@ -186,7 +186,9 @@ const DEMO_ACCOUNTS: Account[] = [
   { id: DEMO_CARD_ACCOUNT_ID, name: "Demo Credit Card", isDemo: true },
 ];
 
-const ACCOUNT_NAMES = new Map(DEMO_ACCOUNTS.map((account) => [account.id, account.name]));
+const ACCOUNT_NAMES = new Map(
+  DEMO_ACCOUNTS.map((account) => [account.id, account.name]),
+);
 
 function clampDay(month: IsoMonth, day: number): string {
   const last = Number(monthEnd(month).slice(8));
@@ -216,8 +218,7 @@ export function buildDemoDataset(
 
   for (const month of months) {
     for (const template of TEMPLATES) {
-      const days =
-        template.day === "weekly" ? [4, 11, 18, 25] : [template.day];
+      const days = template.day === "weekly" ? [4, 11, 18, 25] : [template.day];
 
       for (const day of days) {
         const jitter =

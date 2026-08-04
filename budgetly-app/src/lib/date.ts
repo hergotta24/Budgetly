@@ -69,7 +69,10 @@ export type DateOrder = "auto" | "mdy" | "dmy";
  * `"mdy"` (US, the default) or `"dmy"`. `"auto"` uses month-first unless the
  * first component is greater than 12, which can only be a day.
  */
-export function parseDateToIso(input: unknown, order: DateOrder = "auto"): IsoDate | null {
+export function parseDateToIso(
+  input: unknown,
+  order: DateOrder = "auto",
+): IsoDate | null {
   if (input instanceof Date) {
     if (Number.isNaN(input.getTime())) return null;
     return toIso(input.getFullYear(), input.getMonth() + 1, input.getDate());
@@ -78,7 +81,9 @@ export function parseDateToIso(input: unknown, order: DateOrder = "auto"): IsoDa
   if (typeof input !== "string") return null;
 
   // Trim, drop any trailing time-of-day component.
-  const text = input.trim().replace(/[T\s]\d{1,2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?$/i, "");
+  const text = input
+    .trim()
+    .replace(/[T\s]\d{1,2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?$/i, "");
   if (text === "") return null;
 
   const isoMatch = ISO_DATE_RE.exec(text);

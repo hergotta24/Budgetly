@@ -49,10 +49,7 @@ export function ReportsView() {
   const [customTo, setCustomTo] = useState("");
   const [accountId, setAccountId] = useState("");
 
-  const months = useMemo(
-    () => availableMonths(data.transactions),
-    [data.transactions],
-  );
+  const months = useMemo(() => availableMonths(data.transactions), [data.transactions]);
 
   const range = useMemo(() => {
     if (preset === "custom") {
@@ -213,10 +210,7 @@ export function ReportsView() {
               value={formatCents(scopedTotals.incomeCents)}
               tone="income"
             />
-            <StatTile
-              label="Expenses"
-              value={formatCents(scopedTotals.expenseCents)}
-            />
+            <StatTile label="Expenses" value={formatCents(scopedTotals.expenseCents)} />
             <StatTile
               label="Net"
               value={formatCentsSigned(scopedTotals.netCents)}
@@ -225,10 +219,7 @@ export function ReportsView() {
           </div>
 
           <Card>
-            <CardHeader
-              title="Income vs. expenses by month"
-              description={rangeLabel}
-            />
+            <CardHeader title="Income vs. expenses by month" description={rangeLabel} />
             <CardBody>
               {trend.length < 2 ? (
                 <EmptyState
@@ -241,7 +232,7 @@ export function ReportsView() {
             </CardBody>
           </Card>
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="grid items-start gap-5 lg:grid-cols-2">
             <Card>
               <CardHeader title="Spending by category" description={rangeLabel} />
               <CardBody>

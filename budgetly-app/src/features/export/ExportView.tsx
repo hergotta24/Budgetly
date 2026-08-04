@@ -47,7 +47,8 @@ export function ExportView() {
   const restoreInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(
-    () => sortTransactions(filterTransactions(data.transactions, filters), DEFAULT_SORT),
+    () =>
+      sortTransactions(filterTransactions(data.transactions, filters), DEFAULT_SORT),
     [data.transactions, filters],
   );
 
@@ -57,9 +58,7 @@ export function ExportView() {
 
   function exportCsv(scope: "filtered" | "all") {
     const rows =
-      scope === "all"
-        ? sortTransactions(data.transactions, DEFAULT_SORT)
-        : filtered;
+      scope === "all" ? sortTransactions(data.transactions, DEFAULT_SORT) : filtered;
     if (rows.length === 0) {
       showToast({ tone: "warning", message: "There is nothing to export." });
       return;

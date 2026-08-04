@@ -94,7 +94,10 @@ export function TrendChart({ points }: { points: TrendPoint[] }) {
         })}
       </svg>
 
-      <div className="grid" style={{ gridTemplateColumns: `repeat(${points.length}, 1fr)` }}>
+      <div
+        className="grid"
+        style={{ gridTemplateColumns: `repeat(${points.length}, 1fr)` }}
+      >
         {points.map((point) => (
           <span
             key={point.month}

@@ -156,7 +156,9 @@ export function ImportView() {
   function updateMapping(index: number, patch: Partial<ColumnMapping>) {
     setEntries((current) =>
       current.map((entry, entryIndex) =>
-        entryIndex === index ? { ...entry, mapping: { ...entry.mapping, ...patch } } : entry,
+        entryIndex === index
+          ? { ...entry, mapping: { ...entry.mapping, ...patch } }
+          : entry,
       ),
     );
   }
@@ -247,7 +249,8 @@ export function ImportView() {
     } catch {
       showToast({
         tone: "danger",
-        message: "Something went wrong while saving the import. Nothing partial was kept.",
+        message:
+          "Something went wrong while saving the import. Nothing partial was kept.",
       });
     } finally {
       setBusy(false);
@@ -575,7 +578,9 @@ function MapStep({
               label="Date column"
               hint="required"
               value={mapping.date}
-              onChange={(event) => updateMapping(activeFile, { date: event.target.value })}
+              onChange={(event) =>
+                updateMapping(activeFile, { date: event.target.value })
+              }
             >
               {columnOptions}
             </SelectField>
@@ -739,11 +744,7 @@ function MapStep({
 
       <div className="flex flex-wrap justify-between gap-2">
         <Button onClick={onBack}>Start over</Button>
-        <Button
-          variant="primary"
-          onClick={onContinue}
-          disabled={!canContinue || busy}
-        >
+        <Button variant="primary" onClick={onContinue} disabled={!canContinue || busy}>
           {busy ? "Preparing…" : "Preview import"}
         </Button>
       </div>
@@ -932,7 +933,10 @@ function ReviewStep({
           <CardBody className="p-0 sm:p-0">
             <ul className="divide-y divide-line-subtle">
               {invalidRows.slice(0, 50).map(({ file, row }) => (
-                <li key={stagedRowKey(file, row.rowNumber)} className="px-4 py-3 sm:px-5">
+                <li
+                  key={stagedRowKey(file, row.rowNumber)}
+                  className="px-4 py-3 sm:px-5"
+                >
                   <p className="text-sm font-medium text-ink">
                     {file} · row {row.rowNumber}
                   </p>

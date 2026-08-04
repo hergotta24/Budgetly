@@ -1,9 +1,4 @@
-import {
-  addMonths,
-  monthOf,
-  type IsoDate,
-  type IsoMonth,
-} from "@/lib/date";
+import { addMonths, monthOf, type IsoDate, type IsoMonth } from "@/lib/date";
 import type { Category, MonthlyBudget, Transaction } from "@/lib/db/schema";
 import {
   budgetStatus,
@@ -61,7 +56,10 @@ export function filterTransactions(
   const accounts = new Set(filters.accountIds);
 
   return transactions.filter((transaction) => {
-    if (search !== "" && !normalizeDescription(transaction.description).includes(search)) {
+    if (
+      search !== "" &&
+      !normalizeDescription(transaction.description).includes(search)
+    ) {
       return false;
     }
     if (filters.from && transaction.date < filters.from) return false;

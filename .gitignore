@@ -42,3 +42,8 @@ next-env.d.ts
 
 # local pnpm store
 .pnpm-store/
+
+# Playwright review screenshots
+**/screenshots/
+**/playwright-report/
+**/test-results/

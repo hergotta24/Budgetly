@@ -38,10 +38,7 @@ export function DashboardView() {
   const data = useAppData();
   const [picked, setPicked] = useState<IsoMonth | null>(null);
 
-  const months = useMemo(
-    () => availableMonths(data.transactions),
-    [data.transactions],
-  );
+  const months = useMemo(() => availableMonths(data.transactions), [data.transactions]);
   const month = picked ?? months.at(-1) ?? currentMonth();
 
   const summary = useMemo(
@@ -145,7 +142,11 @@ export function DashboardView() {
               label="Net cash flow"
               value={formatCentsSigned(summary.netCents)}
               tone={summary.netCents >= 0 ? "income" : "danger"}
-              hint={summary.netCents >= 0 ? "You spent less than you earned" : "You spent more than you earned"}
+              hint={
+                summary.netCents >= 0
+                  ? "You spent less than you earned"
+                  : "You spent more than you earned"
+              }
             />
             <StatTile
               label="Budgeted"
@@ -164,7 +165,7 @@ export function DashboardView() {
             />
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="grid items-start gap-5 lg:grid-cols-2">
             <Card>
               <CardHeader
                 title="Spending by category"
@@ -263,7 +264,7 @@ export function DashboardView() {
             </Card>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="grid items-start gap-5 lg:grid-cols-2">
             <Card>
               <CardHeader
                 title="Spending trend"

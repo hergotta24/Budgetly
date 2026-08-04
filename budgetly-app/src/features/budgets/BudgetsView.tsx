@@ -42,7 +42,9 @@ export function BudgetsView() {
   const { showToast } = useToast();
   const [picked, setPicked] = useState<IsoMonth | null>(null);
   /** The one limit field currently being typed into, if any. */
-  const [draft, setDraft] = useState<{ categoryId: string; value: string } | null>(null);
+  const [draft, setDraft] = useState<{ categoryId: string; value: string } | null>(
+    null,
+  );
   const [categoryDialog, setCategoryDialog] = useState<{
     category: Category | null;
   } | null>(null);

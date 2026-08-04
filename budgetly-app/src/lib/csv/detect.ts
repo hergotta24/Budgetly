@@ -2,13 +2,7 @@ import type { ColumnMapping } from "@/lib/db/schema";
 
 /** Column roles Budgetly can map a CSV header onto. */
 export type ColumnRole =
-  | "date"
-  | "description"
-  | "amount"
-  | "debit"
-  | "credit"
-  | "account"
-  | "category";
+  "date" | "description" | "amount" | "debit" | "credit" | "account" | "category";
 
 const ALIASES: Record<ColumnRole, string[]> = {
   date: [
@@ -113,10 +107,7 @@ export function detectColumn(headers: string[], role: ColumnRole): string | null
   return best?.header ?? null;
 }
 
-export type MappingDefaults = Pick<
-  ColumnMapping,
-  "signConvention" | "dateOrder"
->;
+export type MappingDefaults = Pick<ColumnMapping, "signConvention" | "dateOrder">;
 
 /**
  * Proposes a full column mapping for a freshly parsed file.

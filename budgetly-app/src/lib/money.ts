@@ -93,10 +93,7 @@ export function parseAmountToCents(input: unknown): number | null {
 
   if (typeof input !== "string") return null;
 
-  let text = input
-    .replace(/−/g, "-")
-    .replace(/[ \s]/g, "")
-    .trim();
+  let text = input.replace(/−/g, "-").replace(/[ \s]/g, "").trim();
   if (text === "") return null;
 
   let negative = false;
